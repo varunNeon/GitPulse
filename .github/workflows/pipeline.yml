@@ -1,0 +1,48 @@
+name: GitPulse Daily Pipeline
+
+# Run every day at 6:00 AM IST (00:30 UTC)
+on:
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:  # Allows manual trigger from GitHub
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1 — Check out the code from the repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2 — Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Step 3 — Install dependencies
+      - name: Install dependencies
+        run: pip install requests psycopg2-binary pandas sqlalchemy python-dotenv schedule streamlit
+
+      # Step 4 — Run the ETL pipeline
+      - name: Run pipeline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_PAT }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: python -m pipeline.runner
+
+      # Step 5 — Run impact score calculation
+      - name: Calculate impact scores
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN_PAT }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: python -m analysis.impact_score
