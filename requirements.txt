@@ -1,9 +1,8 @@
-streamlit==1.32.0
+requests
+psycopg2-binary
 pandas
 sqlalchemy
-psycopg2-binary
-plotly
 python-dotenv
-requests
 schedule
-altair==4.2.2
+streamlit
+plotly
