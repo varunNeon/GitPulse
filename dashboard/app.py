@@ -279,9 +279,17 @@ with st.sidebar:
     st.markdown("---")
 
     # Read last pipeline run time from file instead of showing page load time
+    # Read last pipeline run time from database instead of local file
     try:
-        with open("last_updated.txt", "r") as f:
-            last_updated = f.read()
+        engine = get_engine()
+        with engine.connect() as conn:
+            result = conn.execute(text("""
+                SELECT MAX(snapshot_date) FROM fact_repo_stats
+            """)).fetchone()
+            if result and result[0]:
+                last_updated = str(result[0].strftime('%d %b %Y'))
+            else:
+                last_updated = "Never — run pipeline first"
     except Exception:
         last_updated = "Never — run pipeline first"
 
