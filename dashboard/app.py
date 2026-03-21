@@ -212,9 +212,10 @@ def load_leaderboard():
             FROM dim_repos r
             JOIN fact_repo_stats s ON r.repo_id = s.repo_id
             JOIN fact_repo_scores sc ON r.repo_id = sc.repo_id
-            WHERE sc.snapshot_date = :today AND s.snapshot_date = :today
+            WHERE sc.snapshot_date = (SELECT MAX(snapshot_date) FROM fact_repo_scores)
+            AND s.snapshot_date = (SELECT MAX(snapshot_date) FROM fact_repo_stats)
             ORDER BY sc.impact_score DESC
-        """), conn, params={"today": date.today()})
+            """), conn)
     return df
 
 @st.cache_data(ttl=300)
