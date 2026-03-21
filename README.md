@@ -1,16 +1,16 @@
-# ⚡ GitPulse — GitHub Repository Intelligence Pipeline
+# GitPulse
 
-> Real-time intelligence across the AI/ML GitHub ecosystem. GitPulse automatically ingests, processes, scores, and visualizes data from hundreds of AI/ML repositories — running fully autonomously every day.
+An automated data pipeline that tracks AI/ML repositories on GitHub, scores them by impact, and surfaces trends through a live dashboard.
 
-**🔴 Live Dashboard:** [gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app](https://gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app)
+**Live:** [gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app](https://gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app)
 
 ---
 
-## What is GitPulse?
+## What it does
 
-Most GitHub trend tools just show you star counts. GitPulse goes deeper — it tracks 148 AI/ML repositories across 8 topics, calculates a composite impact score for each one, detects anomalous growth patterns, and surfaces hidden gems that most people haven't noticed yet.
+GitPulse pulls data on 148 AI/ML repositories across 8 topics every day, loads it into a PostgreSQL database, and calculates a composite impact score for each repo. The dashboard shows which repos are growing fastest, flags unusual spikes, and surfaces underrated repos with high momentum but low visibility.
 
-The pipeline runs automatically every day at 6AM IST via GitHub Actions, writes fresh data into a cloud PostgreSQL database, and the dashboard reflects the latest state in real time.
+The whole thing runs automatically at 6AM IST via GitHub Actions. No manual steps needed after setup.
 
 ---
 
@@ -18,118 +18,98 @@ The pipeline runs automatically every day at 6AM IST via GitHub Actions, writes 
 
 ```
 GitHub REST API
-      ↓
-[INGESTION]  fetch_repos.py — pulls top 25 repos per topic, 8 topics
-      ↓
-[TRANSFORM]  transform.py — cleans JSON, removes duplicates, extracts fields
-      ↓
-[LOAD]       load.py — upserts into PostgreSQL star schema
-      ↓
-[POSTGRESQL] Supabase cloud — dim_repos, dim_users, fact_repo_stats, fact_repo_scores
-      ↓
-[ANALYSIS]   impact_score.py — weighted scoring, hidden gems, trend detection
-      ↓
-[DASHBOARD]  Streamlit — 4-page interactive intelligence interface
-      ↑
-[SCHEDULER]  GitHub Actions — runs full pipeline daily at 00:30 UTC (6AM IST)
+      |
+   fetch_repos.py      pulls top 25 repos per topic across 8 AI/ML topics
+      |
+   transform.py        cleans raw JSON, removes cross-topic duplicates
+      |
+   load.py             upserts into PostgreSQL with star schema design
+      |
+   PostgreSQL          Supabase cloud (dim_repos, fact_repo_stats, fact_repo_scores)
+      |
+   impact_score.py     calculates weighted scores, finds hidden gems
+      |
+   app.py              Streamlit dashboard, 4 pages
+      |
+   pipeline.yml        GitHub Actions runs the full pipeline daily
 ```
 
 ---
 
-## Features
+## Dashboard pages
 
-**Overview Page**
-- KPI metrics — repos tracked, total stars, top impact score, language diversity
-- Hidden Gems — underrated repos with high fork ratio but below-median star count
-- Top 5 repos by composite impact score
-- Stars by language and topic distribution charts
+**Overview** — KPI metrics, hidden gems section, top 5 by impact score, stars by language and topic charts
 
-**Leaderboard**
-- All 148 repos ranked by impact score
-- Filter by programming language and topic
-- Score breakdown showing star, fork, and issue contributions
+**Leaderboard** — all 148 repos ranked by impact score with language and topic filters, score breakdown columns showing what drove each rank
 
-**Trends**
-- Fastest growing repos by daily star growth
-- Star growth over time line chart with repo comparison
-- Identifies momentum shifts across the AI/ML ecosystem
+**Trends** — daily star growth chart, repo comparison over time
 
-**Anomaly Detection**
-- Statistical 2σ threshold detection on daily star growth
-- Flags repos with unusually high activity (viral growth events)
-- Visual comparison of normal vs anomalous growth patterns
+**Anomaly Detection** — repos flagged by 2 standard deviation threshold on growth rate, with a visual showing normal vs flagged repos
 
 ---
 
-## Impact Score Formula
+## Impact score
 
-Each repo is scored using a weighted composite of three normalized metrics:
+Each repo gets a score between 0 and 1 based on three factors:
 
 ```
-Impact Score = (0.50 × Star Velocity) + (0.30 × Fork Score) + (0.20 × Issue Score)
+Impact Score = (0.50 x Star Velocity) + (0.30 x Fork Score) + (0.20 x Issue Score)
 ```
 
-- **Star Velocity** — normalized star count relative to all tracked repos
-- **Fork Score** — fork-to-star ratio, measuring how actively people build on it
-- **Issue Score** — open issue count, measuring active usage and community engagement
+Star velocity measures popularity relative to all tracked repos. Fork score measures the fork-to-star ratio, which captures how actively people build on top of a repo. Issue score uses open issue count as a proxy for active usage. All three are min-max normalized before combining.
 
-All metrics are min-max normalized to [0, 1] before scoring.
+A repo with 10k stars but a high fork ratio often tells you more about real adoption than one with 100k stars that nobody forks.
 
 ---
 
-## Database Schema (Star Schema)
+## Database schema
+
+Two dimension tables store descriptive info. Two fact tables store daily measurements.
 
 ```
-dim_repos          — repository metadata (id, name, language, topics, url)
-dim_users          — contributor/owner profiles
-fact_repo_stats    — daily snapshots (stars, forks, watchers, open_issues)
-fact_repo_scores   — daily impact scores (star_velocity, fork_score, impact_score)
+dim_repos           name, language, topics, URL, timestamps
+dim_users           username, followers, public repos
+fact_repo_stats     daily snapshot of stars, forks, watchers, open issues
+fact_repo_scores    daily impact scores and component breakdown
 ```
 
-Fact tables reference dimension tables via foreign keys, following standard data warehouse design patterns.
+Fact tables reference dim_repos by foreign key. Running the pipeline daily means each table accumulates one new row per repo per day, which is what makes the trend charts work over time.
 
 ---
 
-## Tech Stack
+## Tech stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Data Source | GitHub REST API | Live repository data |
-| Ingestion | Python + Requests | API fetching with auth |
-| Transform | Pandas | Cleaning, deduplication, feature engineering |
-| Storage | PostgreSQL (Supabase) | Cloud data warehouse |
-| ORM | SQLAlchemy | Database abstraction |
-| Analysis | Pandas + NumPy | Statistical scoring and anomaly detection |
-| Dashboard | Streamlit + Plotly | Interactive visualization |
-| Scheduler | GitHub Actions | Daily automated pipeline runs |
-| Secrets | GitHub Secrets + .env | Credential management |
-
----
-
-## Topics Tracked
-
-`machine-learning` · `deep-learning` · `llm` · `computer-vision` · `data-engineering` · `mlops` · `pytorch` · `transformers`
+| Layer | Tool |
+|---|---|
+| Source | GitHub REST API |
+| Ingestion | Python, Requests |
+| Transform | Pandas |
+| Storage | PostgreSQL via Supabase |
+| ORM | SQLAlchemy |
+| Analysis | Pandas, NumPy |
+| Dashboard | Streamlit, Plotly |
+| Scheduler | GitHub Actions |
 
 ---
 
-## Running Locally
+## Topics tracked
 
-**Prerequisites:** Python 3.11+, PostgreSQL
+machine-learning, deep-learning, llm, computer-vision, data-engineering, mlops, pytorch, transformers
 
-**1. Clone the repository**
+---
+
+## Running locally
+
+Requires Python 3.11 and a PostgreSQL database.
+
 ```bash
 git clone https://github.com/varunNeon/GitPulse.git
 cd GitPulse
-```
-
-**2. Install dependencies**
-```bash
 pip install -r requirements.txt
 ```
 
-**3. Set up environment variables**
+Create a `.env` file:
 
-Create a `.env` file in the project root:
 ```
 GITHUB_TOKEN=your_github_pat
 DB_HOST=your_db_host
@@ -139,82 +119,44 @@ DB_USER=postgres
 DB_PASSWORD=your_password
 ```
 
-**4. Initialize the database**
-```bash
-python -m warehouse.schema
-```
+Then run:
 
-**5. Run the pipeline**
 ```bash
-python -m pipeline.runner
-```
-
-**6. Calculate impact scores**
-```bash
-python -m analysis.impact_score
-```
-
-**7. Launch the dashboard**
-```bash
-streamlit run dashboard/app.py
+python -m warehouse.schema        # create tables
+python -m pipeline.runner         # fetch and load data
+python -m analysis.impact_score   # calculate scores
+streamlit run dashboard/app.py    # launch dashboard
 ```
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 GitPulse/
-├── ingestion/
-│   ├── __init__.py
-│   └── fetch_repos.py       # GitHub API fetcher
-├── pipeline/
-│   ├── __init__.py
-│   ├── transform.py         # Data cleaning and transformation
-│   ├── load.py              # Database loading with upsert logic
-│   └── runner.py            # ETL orchestrator
-├── warehouse/
-│   ├── __init__.py
-│   ├── db.py                # Database connection manager
-│   ├── schema.py            # Table creation
-│   └── cleanup.py           # Duplicate removal utility
-├── analysis/
-│   ├── __init__.py
-│   ├── impact_score.py      # Scoring engine + hidden gems
-│   └── trends.py            # Growth analysis + anomaly detection
-├── dashboard/
-│   └── app.py               # Streamlit dashboard
-├── .github/
-│   └── workflows/
-│       └── pipeline.yml     # GitHub Actions daily scheduler
-├── requirements.txt
-├── .python-version
-└── .gitignore
+  ingestion/
+    fetch_repos.py       GitHub API fetcher
+  pipeline/
+    transform.py         cleaning and deduplication
+    load.py              database loading with upsert logic
+    runner.py            runs the full ETL in sequence
+  warehouse/
+    db.py                database connection
+    schema.py            table definitions
+    cleanup.py           removes duplicate rows
+  analysis/
+    impact_score.py      scoring and hidden gems
+    trends.py            growth and anomaly detection
+  dashboard/
+    app.py               Streamlit app
+  .github/workflows/
+    pipeline.yml         daily GitHub Actions schedule
 ```
 
 ---
 
-## Automated Pipeline
+## Built by
 
-The pipeline runs automatically every day at **6:00 AM IST** via GitHub Actions:
-
-1. GitHub spins up an Ubuntu runner
-2. Installs Python dependencies
-3. Fetches fresh data from GitHub API (200 repos → 148 unique after deduplication)
-4. Loads into Supabase PostgreSQL
-5. Recalculates all impact scores
-6. Dashboard reflects updated data automatically
-
-No manual intervention required.
-
----
-
-## Built By
-
-**Varun Lal** — MSc Data Science & Analytics, Jain University
+Varun Lal — MSc Data Science and Analytics, Jain University
 
 [GitHub](https://github.com/varunNeon) · [LinkedIn](https://www.linkedin.com/in/varunnlal/)
-
----
-
-*GitPulse v1.0 — Built as a portfolio project demonstrating end-to-end data engineering: API ingestion, ETL pipeline, cloud data warehouse, statistical analysis, and automated deployment.*
