@@ -199,7 +199,7 @@ hr { border-color: #21262D !important; }
 #  DATA LOADING FUNCTIONS — cached for performance
 # ══════════════════════════════════════════════════
 
-@st.cache_data(ttl=300)  # Cache for 5 minutes
+@st.cache_data(ttl=3600)  # Cache for 1 hour
 def load_leaderboard():
     """Loads today's impact scores joined with repo metadata."""
     engine = get_engine()
@@ -218,7 +218,7 @@ def load_leaderboard():
             """), conn)
     return df
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=3600)
 def load_trends():
     """Loads all historical snapshots to compute star growth over time."""
     engine = get_engine()
@@ -233,7 +233,7 @@ def load_trends():
         """), conn)
     return df
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=3600)
 def load_anomalies():
     """Detects repos whose star growth is 2+ std deviations above the mean."""
     df = load_trends()
@@ -288,7 +288,7 @@ with st.sidebar:
                 SELECT MAX(snapshot_date) FROM fact_repo_stats
             """)).fetchone()
             if result and result[0]:
-                last_updated = str(result[0].strftime('%d %b %Y'))
+                last_updated = str(result[0].strftime('%d %b %Y · Pipeline ✓'))
             else:
                 last_updated = "Never — run pipeline first"
     except Exception:
