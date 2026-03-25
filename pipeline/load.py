@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from warehouse.db import get_engine
-from datetime import date
+from datetime import datetime, timedelta
 
 def load_repos(cleaned_repos: list):
     engine = get_engine()
@@ -44,7 +44,7 @@ def load_repos(cleaned_repos: list):
 
 def load_repo_stats(cleaned_repos: list):
     engine = get_engine()
-    today = date.today()
+    today = (datetime.utcnow() + timedelta(hours=5, minutes=30)).date()
 
     with engine.connect() as conn:
         for repo in cleaned_repos:
