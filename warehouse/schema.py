@@ -1,10 +1,16 @@
 from sqlalchemy import text
+
+from common.logging_config import get_logger
 from warehouse.db import get_engine
+
+
+logger = get_logger(__name__)
+
 
 def create_tables():
     engine = get_engine()
-    
-    with engine.connect() as conn:
+
+    with engine.begin() as conn:
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS dim_repos (
                 repo_id BIGINT PRIMARY KEY,
@@ -37,13 +43,13 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS fact_repo_stats (
                 id SERIAL PRIMARY KEY,
                 repo_id BIGINT REFERENCES dim_repos(repo_id),
-                snapshot_date DATE,
-                stars INT,
-                forks INT,
-                watchers INT,
-                open_issues INT,
-                contributors_count INT,
-                commit_count_last30 INT
+                snapshot_date DATE NOT NULL,
+                stars INT NOT NULL,
+                forks INT NOT NULL,
+                watchers INT NOT NULL,
+                open_issues INT NOT NULL,
+                contributors_count INT NOT NULL DEFAULT 0,
+                commit_count_last30 INT NOT NULL DEFAULT 0
             );
         """))
 
@@ -51,16 +57,53 @@ def create_tables():
             CREATE TABLE IF NOT EXISTS fact_repo_scores (
                 id SERIAL PRIMARY KEY,
                 repo_id BIGINT REFERENCES dim_repos(repo_id),
-                snapshot_date DATE,
-                star_velocity FLOAT,
-                issue_resolution_rate FLOAT,
-                contributor_growth FLOAT,
-                impact_score FLOAT
+                snapshot_date DATE NOT NULL,
+                star_velocity FLOAT NOT NULL,
+                fork_score FLOAT NOT NULL DEFAULT 0,
+                issue_score FLOAT NOT NULL DEFAULT 0,
+                impact_score FLOAT NOT NULL
             );
         """))
 
-        conn.commit()
-        print("✅ All tables created successfully!")
+        conn.execute(text("""
+            DELETE FROM fact_repo_stats a
+            USING fact_repo_stats b
+            WHERE a.repo_id = b.repo_id
+              AND a.snapshot_date = b.snapshot_date
+              AND a.id < b.id;
+        """))
+
+        conn.execute(text("""
+            DELETE FROM fact_repo_scores a
+            USING fact_repo_scores b
+            WHERE a.repo_id = b.repo_id
+              AND a.snapshot_date = b.snapshot_date
+              AND a.id < b.id;
+        """))
+
+        conn.execute(text("""
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_fact_repo_stats_repo_date
+            ON fact_repo_stats (repo_id, snapshot_date);
+        """))
+
+        conn.execute(text("""
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_fact_repo_scores_repo_date
+            ON fact_repo_scores (repo_id, snapshot_date);
+        """))
+
+        # Keep older column names usable for already-provisioned databases.
+        conn.execute(text("""
+            ALTER TABLE fact_repo_scores
+            ADD COLUMN IF NOT EXISTS fork_score FLOAT;
+        """))
+
+        conn.execute(text("""
+            ALTER TABLE fact_repo_scores
+            ADD COLUMN IF NOT EXISTS issue_score FLOAT;
+        """))
+
+        logger.info("All tables created successfully.")
+
 
 if __name__ == "__main__":
     create_tables()

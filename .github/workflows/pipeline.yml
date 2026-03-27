@@ -1,56 +1,51 @@
 name: GitPulse Daily Pipeline
 
-# Run every day at 6:00 AM IST (00:30 UTC)
 on:
   schedule:
-    - cron: '30 0 * * *'
-  workflow_dispatch:  # Allows manual trigger from GitHub
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: gitpulse-daily-pipeline
+  cancel-in-progress: false
 
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN_PAT }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_SSLMODE: require
 
     steps:
-      # Step 1 — Check out the code from the repo
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Step 2 — Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+          cache: "pip"
 
-      # Step 3 — Install dependencies
       - name: Install dependencies
-        run: pip install requests psycopg2-binary pandas sqlalchemy python-dotenv schedule streamlit
+        run: pip install -r requirements.txt
 
-      - name: Debug token
-        run: |
-          echo "Token length:"
-          echo ${#GITHUB_TOKEN}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_PAT }}    
+      - name: Validate code compiles
+        run: python -m compileall .
 
+      - name: Run tests
+        run: pytest
 
-      # Step 4 — Run the ETL pipeline
+      - name: Set run date
+        run: echo "GITPULSE_RUN_DATE=$(date -u +%F)" >> $GITHUB_ENV
+
       - name: Run pipeline
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_PAT }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: python -m pipeline.runner
 
-      # Step 5 — Run impact score calculation
       - name: Calculate impact scores
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_PAT }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: python -m analysis.impact_score

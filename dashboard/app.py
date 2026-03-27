@@ -3,13 +3,15 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from sqlalchemy import text
-from datetime import datetime
 import sys
 import os
 
 # ── Add project root to path so imports work when running from dashboard/ ──
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from common.logging_config import get_logger
 from warehouse.db import get_engine
+
+logger = get_logger(__name__)
 
 # ══════════════════════════════════════════════════
 #  PAGE CONFIG — must be first Streamlit call
@@ -205,15 +207,31 @@ def load_leaderboard():
     engine = get_engine()
     with engine.connect() as conn:
         df = pd.read_sql(text("""
+            WITH latest_stats AS (
+                SELECT
+                    repo_id, snapshot_date, stars, forks, open_issues,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY repo_id
+                        ORDER BY snapshot_date DESC, id DESC
+                    ) AS row_num
+                FROM fact_repo_stats
+            ),
+            latest_scores AS (
+                SELECT
+                    repo_id, snapshot_date, impact_score, star_velocity, fork_score, issue_score,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY repo_id
+                        ORDER BY snapshot_date DESC, id DESC
+                    ) AS row_num
+                FROM fact_repo_scores
+            )
             SELECT 
                 r.name, r.full_name, r.language, r.topics, r.html_url,
                 s.stars, s.forks, s.open_issues,
-                sc.impact_score, sc.star_velocity, sc.snapshot_date
+                sc.impact_score, sc.star_velocity, sc.fork_score, sc.issue_score, sc.snapshot_date
             FROM dim_repos r
-            JOIN fact_repo_stats s ON r.repo_id = s.repo_id
-            JOIN fact_repo_scores sc ON r.repo_id = sc.repo_id
-            WHERE sc.snapshot_date = (SELECT MAX(snapshot_date) FROM fact_repo_scores)
-            AND s.snapshot_date = (SELECT MAX(snapshot_date) FROM fact_repo_stats)
+            JOIN latest_stats s ON r.repo_id = s.repo_id AND s.row_num = 1
+            JOIN latest_scores sc ON r.repo_id = sc.repo_id AND sc.row_num = 1
             ORDER BY sc.impact_score DESC
             """), conn)
     return df
@@ -292,6 +310,7 @@ with st.sidebar:
             else:
                 last_updated = "Never — run pipeline first"
     except Exception:
+        logger.exception("Failed to load last updated timestamp.")
         last_updated = "Never — run pipeline first"
 
     st.markdown(f"""
@@ -444,6 +463,7 @@ if page == "⚡ Overview":
             st.plotly_chart(fig2, use_container_width=True)
 
     except Exception as e:
+        logger.exception("Overview page failed to load.")
         st.error(f"Error loading data: {e}")
 
 
@@ -494,8 +514,8 @@ elif page == "🏆 Leaderboard":
 
         # Add score breakdown columns so users understand why each repo is ranked
         filtered["⭐ Star Score"] = (filtered["star_velocity"] * 0.50).round(4)
-        filtered["🍴 Fork Score"] = (filtered["star_velocity"] * 0.30).round(4)
-        filtered["🐛 Issue Score"] = (filtered["star_velocity"] * 0.20).round(4)
+        filtered["🍴 Fork Score"] = (filtered["fork_score"] * 0.30).round(4)
+        filtered["🐛 Issue Score"] = (filtered["issue_score"] * 0.20).round(4)
 
         display_df = filtered[[
             "name", "language", "stars", "forks", "open_issues",
@@ -526,6 +546,7 @@ elif page == "🏆 Leaderboard":
         """, unsafe_allow_html=True)
 
     except Exception as e:
+        logger.exception("Leaderboard page failed to load.")
         st.error(f"Error loading data: {e}")
 
 
@@ -615,6 +636,7 @@ elif page == "📈 Trends":
                 st.plotly_chart(fig2, use_container_width=True)
 
     except Exception as e:
+        logger.exception("Trends page failed to load.")
         st.error(f"Error loading data: {e}")
 
 
@@ -710,6 +732,7 @@ elif page == "🚨 Anomalies":
                 st.plotly_chart(fig, use_container_width=True)
 
     except Exception as e:
+        logger.exception("Anomalies page failed to load.")
         st.error(f"Error loading data: {e}")
 
 

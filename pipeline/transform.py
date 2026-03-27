@@ -1,4 +1,8 @@
-from datetime import datetime, timezone
+from common.logging_config import get_logger
+
+
+logger = get_logger(__name__)
+
 
 def parse_repo(repo: dict) -> dict:
     return {
@@ -17,6 +21,7 @@ def parse_repo(repo: dict) -> dict:
         "open_issues": repo.get("open_issues_count", 0),
     }
 
+
 def transform_repos(raw_repos: list) -> list:
     seen = set()
     cleaned = []
@@ -27,8 +32,11 @@ def transform_repos(raw_repos: list) -> list:
         if repo_id in seen:
             continue
         seen.add(repo_id)
-
         cleaned.append(parse_repo(repo))
 
-    print(f"✅ Transformed {len(cleaned)} unique repos (removed {len(raw_repos) - len(cleaned)} duplicates)")
+    logger.info(
+        "Transformed %s unique repos and removed %s duplicates.",
+        len(cleaned),
+        len(raw_repos) - len(cleaned),
+    )
     return cleaned
