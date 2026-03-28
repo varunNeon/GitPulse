@@ -28,32 +28,37 @@ st.markdown(
     """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-:root{--bg:#06090f;--bg-elev:#0b1220;--panel:rgba(11,18,32,.9);--panel-strong:rgba(16,26,43,.95);--border:rgba(89,122,173,.24);--text:#ebf2ff;--muted:#8ca0bf;--blue:#4da3ff;--cyan:#35e0d0;--green:#49d17d;--red:#ff5d73;--amber:#f3c969;}
+:root{--bg:#030507;--bg-elev:#071018;--panel:rgba(7,16,24,.92);--panel-strong:rgba(9,22,18,.94);--border:rgba(58,120,96,.24);--text:#edf8f3;--muted:#8aa39b;--blue:#4f8cff;--cyan:#1ec7c1;--green:#49d17d;--green-deep:#0e3b2c;--blue-deep:#0f264f;--red:#ff6a7f;--amber:#c7f27b;}
 html,body,[class*="css"]{font-family:'Space Grotesk',sans-serif;color:var(--text);}
-[data-testid="stAppViewContainer"]{background:radial-gradient(circle at top left,rgba(53,224,208,.12),transparent 30%),radial-gradient(circle at top right,rgba(77,163,255,.12),transparent 28%),linear-gradient(180deg,#04070d 0%,#06090f 45%,#09111f 100%);}
+[data-testid="stAppViewContainer"]{background:radial-gradient(circle at top left,rgba(30,199,193,.1),transparent 26%),radial-gradient(circle at top right,rgba(79,140,255,.12),transparent 28%),radial-gradient(circle at bottom right,rgba(73,209,125,.08),transparent 24%),linear-gradient(180deg,#010202 0%,#030507 38%,#071018 100%);}
 [data-testid="stHeader"],#MainMenu,footer{visibility:hidden;}
 .block-container{max-width:1480px;padding:1.4rem 2rem 2rem 2rem;}
-[data-testid="stSidebar"]{background:linear-gradient(180deg,rgba(9,14,24,.96) 0%,rgba(8,12,21,.96) 100%);border-right:1px solid rgba(77,163,255,.16);}
+[data-testid="stSidebar"]{background:linear-gradient(180deg,rgba(4,8,11,.98) 0%,rgba(5,12,15,.98) 48%,rgba(6,15,22,.98) 100%);border-right:1px solid rgba(30,199,193,.16);}
 [data-testid="stSidebar"] *{font-family:'IBM Plex Mono',monospace!important;}
 [data-testid="stSidebarCollapseButton"] span{display:none;}
-[data-testid="stMetric"]{background:linear-gradient(180deg,rgba(12,20,35,.88),rgba(9,15,27,.92));border:1px solid var(--border);border-radius:18px;padding:.9rem 1rem;}
+[data-testid="stMetric"]{background:linear-gradient(180deg,rgba(6,16,20,.92),rgba(7,13,24,.96));border:1px solid var(--border);border-radius:18px;padding:.9rem 1rem;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+[data-testid="stMetric"]:hover{transform:translateY(-2px);border-color:rgba(73,209,125,.42);box-shadow:0 16px 34px rgba(2,8,10,.28);}
 [data-testid="stMetricLabel"]{font-family:'IBM Plex Mono',monospace!important;font-size:.68rem!important;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)!important;}
-[data-testid="stMetricValue"]{font-family:'IBM Plex Mono',monospace!important;color:var(--text)!important;font-size:1.55rem!important;}
+[data-testid="stMetricValue"]{font-family:'IBM Plex Mono',monospace!important;color:var(--text)!important;font-size:1.55rem!important;text-shadow:0 0 18px rgba(73,209,125,.08);}
 [data-testid="stMetricDelta"]{font-family:'IBM Plex Mono',monospace!important;}
-[data-testid="stDataFrame"]{background:rgba(8,13,23,.86);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
-[data-testid="stSelectbox"] > div > div,[data-testid="stMultiSelect"] > div > div{background:rgba(10,16,28,.96)!important;border:1px solid var(--border)!important;border-radius:14px!important;}
+[data-testid="stDataFrame"]{background:rgba(5,11,15,.9);border:1px solid rgba(58,120,96,.28);border-radius:18px;overflow:hidden;}
+[data-testid="stSelectbox"] > div > div,[data-testid="stMultiSelect"] > div > div{background:rgba(5,12,16,.98)!important;border:1px solid rgba(58,120,96,.3)!important;border-radius:14px!important;}
+[data-testid="stRadio"] label{font-size:.74rem!important;}
+[data-testid="stRadio"] [role="radiogroup"]{gap:.45rem;}
+[data-testid="stRadio"] [role="radio"]{background:rgba(7,16,22,.86);border:1px solid rgba(58,120,96,.22);border-radius:14px;padding:.6rem .75rem;transition:border-color .16s ease,background .16s ease,transform .16s ease;}
+[data-testid="stRadio"] [role="radio"]:hover{transform:translateX(2px);border-color:rgba(79,140,255,.36);background:rgba(9,20,29,.96);}
 hr{border-color:rgba(89,122,173,.16)!important;}
-.shell,.panel,.status-card,.repo-card,.anomaly-card,.sidebar-block{background:linear-gradient(180deg,rgba(12,19,34,.9),rgba(9,15,27,.96));border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,.02);}
-.shell{position:relative;overflow:hidden;border-radius:28px;padding:1.35rem 1.4rem;margin-bottom:1.2rem;}
-.shell::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(77,163,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(77,163,255,.05) 1px,transparent 1px);background-size:28px 28px;opacity:.18;pointer-events:none;}
+.shell,.panel,.status-card,.repo-card,.anomaly-card,.sidebar-block{background:linear-gradient(180deg,rgba(5,14,18,.94),rgba(6,11,20,.98));border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,.02);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+.shell{position:relative;overflow:hidden;border-radius:28px;padding:1.35rem 1.4rem;margin-bottom:1.2rem;box-shadow:0 22px 48px rgba(1,5,7,.42);}
+.shell::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(30,199,193,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,.04) 1px,transparent 1px);background-size:28px 28px;opacity:.22;pointer-events:none;}
 .hero-grid{display:grid;grid-template-columns:1.6fr .9fr;gap:1rem;position:relative;z-index:1;}
 .hero-eyebrow,.section-header,.panel-label,.status-label,.badge,.sidebar-kicker{font-family:'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;}
-.hero-eyebrow{color:var(--cyan);font-size:.72rem;margin-bottom:.55rem;}
+.hero-eyebrow{color:var(--green);font-size:.72rem;margin-bottom:.55rem;}
 .hero-title{font-size:clamp(2rem,4vw,3.3rem);line-height:.95;font-weight:700;color:var(--text);margin:0;max-width:10ch;}
-.hero-title span{color:var(--blue);}
+.hero-title span{color:var(--cyan);}
 .hero-copy{margin-top:.8rem;max-width:60ch;color:var(--muted);font-size:.96rem;line-height:1.55;}
 .hero-badges{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1rem;}
-.badge{padding:.45rem .7rem;border-radius:999px;font-size:.64rem;border:1px solid rgba(77,163,255,.22);background:rgba(13,22,38,.92);color:var(--text);}
+.badge{padding:.45rem .7rem;border-radius:999px;font-size:.64rem;border:1px solid rgba(58,120,96,.3);background:linear-gradient(180deg,rgba(8,20,17,.95),rgba(8,16,24,.9));color:var(--text);}
 .hero-side,.panel,.status-card,.repo-card,.anomaly-card,.sidebar-block{position:relative;overflow:hidden;border-radius:22px;}
 .hero-side{padding:1rem;}
 .status-stack{display:grid;gap:.75rem;}
@@ -63,25 +68,26 @@ hr{border-color:rgba(89,122,173,.16)!important;}
 .good{color:var(--green)!important;}
 .warn{color:var(--amber)!important;}
 .panel{padding:1rem 1.05rem;margin-bottom:1rem;}
-.panel-value{font-family:'IBM Plex Mono',monospace;font-size:1.6rem;color:var(--text);font-weight:600;}
+.panel:hover,.repo-card:hover,.status-card:hover,.anomaly-card:hover,.sidebar-block:hover{transform:translateY(-2px);border-color:rgba(73,209,125,.34);box-shadow:0 18px 36px rgba(1,6,8,.24);}
+.panel-value{font-family:'IBM Plex Mono',monospace;font-size:1.6rem;color:var(--text);font-weight:600;text-shadow:0 0 16px rgba(79,140,255,.08);}
 .panel-meta,.repo-meta,.sidebar-value,.footer-note{color:var(--muted);font-size:.8rem;line-height:1.55;}
-.section-header{display:flex;align-items:center;gap:.6rem;color:var(--blue);font-size:.72rem;margin:1.1rem 0 .8rem 0;}
-.section-header::before{content:"";width:30px;height:1px;background:linear-gradient(90deg,var(--cyan),transparent);}
+.section-header{display:flex;align-items:center;gap:.6rem;color:var(--green);font-size:.72rem;margin:1.1rem 0 .8rem 0;}
+.section-header::before{content:"";width:30px;height:1px;background:linear-gradient(90deg,var(--green),transparent);}
 .repo-card,.anomaly-card{padding:1rem 1.05rem;margin-bottom:.85rem;}
 .repo-kicker{display:flex;justify-content:space-between;gap:.75rem;margin-bottom:.55rem;}
 .repo-rank{font-family:'IBM Plex Mono',monospace;font-size:.67rem;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;}
-.score-pill{display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:.3rem .65rem;border-radius:999px;background:rgba(77,163,255,.12);border:1px solid rgba(77,163,255,.24);color:var(--blue);font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;}
+.score-pill{display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:.3rem .65rem;border-radius:999px;background:rgba(79,140,255,.12);border:1px solid rgba(79,140,255,.24);color:#7fb0ff;font-family:'IBM Plex Mono',monospace;font-size:.74rem;font-weight:600;}
 .repo-name,.anomaly-name{font-size:1.04rem;font-weight:700;color:var(--text);}
 .gem-card{border-color:rgba(73,209,125,.28);}
 .gem-card .repo-rank{color:var(--green);}
 .anomaly-card{border-color:rgba(255,93,115,.26);}
 .anomaly-growth{font-family:'IBM Plex Mono',monospace;color:var(--red);font-weight:600;}
 .sidebar-title{font-size:1.6rem;line-height:.95;font-weight:700;color:var(--text);}
-.sidebar-title span{color:var(--blue);}
+.sidebar-title span{color:var(--green);}
 .sidebar-sub{color:var(--muted);font-size:.66rem;margin-top:.45rem;letter-spacing:.16em;text-transform:uppercase;}
 .sidebar-block{padding:.9rem 1rem;margin-top:.75rem;border-radius:16px;}
 .footer-note{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.72rem;padding:.8rem 0 .5rem 0;}
-.footer-note a{color:var(--blue);text-decoration:none;}
+.footer-note a{color:var(--cyan);text-decoration:none;}
 @media (max-width:1100px){.hero-grid{grid-template-columns:1fr;}}
 </style>
 """,
@@ -173,6 +179,20 @@ def load_system_snapshot():
                 """
             )
         ).mappings().one()
+        history_result = conn.execute(
+            text(
+                """
+                SELECT
+                    COUNT(DISTINCT snapshot_date) AS tracked_days,
+                    COUNT(DISTINCT language) AS languages_covered
+                FROM (
+                    SELECT s.snapshot_date, r.language
+                    FROM fact_repo_stats s
+                    JOIN dim_repos r ON r.repo_id = s.repo_id
+                ) history
+                """
+            )
+        ).mappings().one()
     latest_snapshot = stats_result["latest_snapshot"]
     score_snapshot = scores_result["latest_score_snapshot"]
     status = "Pipeline healthy" if latest_snapshot and latest_snapshot == score_snapshot else "Needs review"
@@ -181,6 +201,8 @@ def load_system_snapshot():
         "latest_stats_rows": stats_result["latest_stats_rows"] or 0,
         "latest_repo_count": stats_result["latest_repo_count"] or 0,
         "latest_score_rows": scores_result["latest_score_rows"] or 0,
+        "tracked_days": history_result["tracked_days"] or 0,
+        "languages_covered": history_result["languages_covered"] or 0,
         "status": status,
     }
 
@@ -188,21 +210,25 @@ def load_system_snapshot():
 def build_chart_theme():
     return dict(
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(9, 15, 27, 0.85)",
-        font=dict(family="IBM Plex Mono", color="#8ca0bf", size=11),
+        plot_bgcolor="rgba(5, 12, 16, 0.92)",
+        font=dict(family="IBM Plex Mono", color="#8aa39b", size=11),
         xaxis=dict(
-            gridcolor="rgba(89, 122, 173, 0.16)",
-            linecolor="rgba(89, 122, 173, 0.16)",
-            tickcolor="rgba(89, 122, 173, 0.16)",
+            gridcolor="rgba(58, 120, 96, 0.16)",
+            linecolor="rgba(58, 120, 96, 0.16)",
+            tickcolor="rgba(58, 120, 96, 0.16)",
             zeroline=False,
+            title_font=dict(color="#49d17d", family="IBM Plex Mono"),
         ),
         yaxis=dict(
-            gridcolor="rgba(89, 122, 173, 0.16)",
-            linecolor="rgba(89, 122, 173, 0.16)",
-            tickcolor="rgba(89, 122, 173, 0.16)",
+            gridcolor="rgba(58, 120, 96, 0.16)",
+            linecolor="rgba(58, 120, 96, 0.16)",
+            tickcolor="rgba(58, 120, 96, 0.16)",
             zeroline=False,
+            title_font=dict(color="#4f8cff", family="IBM Plex Mono"),
         ),
         margin=dict(l=20, r=20, t=40, b=20),
+        title_font=dict(color="#edf8f3", family="Space Grotesk", size=18),
+        legend=dict(font=dict(color="#8aa39b", family="IBM Plex Mono")),
     )
 
 
@@ -281,6 +307,8 @@ except Exception:
         "latest_stats_rows": 0,
         "latest_repo_count": 0,
         "latest_score_rows": 0,
+        "tracked_days": 0,
+        "languages_covered": 0,
         "status": "Needs review",
     }
 
@@ -320,6 +348,7 @@ with st.sidebar:
             <div class="sidebar-kicker">Warehouse</div>
             <div class="sidebar-value">{system_snapshot['latest_repo_count']:,} tracked repos</div>
             <div class="sidebar-value">{system_snapshot['latest_stats_rows']:,} stats rows</div>
+            <div class="sidebar-value">{system_snapshot['tracked_days']:,} tracked days</div>
         </div>
         <div class="sidebar-block">
             <div class="sidebar-kicker">Source</div>
@@ -384,14 +413,15 @@ if page == "Overview":
                 )
 
         render_section_header("System pulse")
-        pulse_left, pulse_mid, pulse_right = st.columns([1.2, 1, 1])
+        pulse_left, pulse_mid, pulse_right, pulse_far = st.columns([1.2, 1, 1, 1])
+        score_sync_gap = abs(system_snapshot["latest_stats_rows"] - system_snapshot["latest_score_rows"])
         with pulse_left:
             st.markdown(
                 f"""
                 <div class="panel">
                     <div class="panel-label">Latest run telemetry</div>
                     <div class="panel-value">{system_snapshot['latest_stats_rows']:,}</div>
-                    <div class="panel-meta">Stats rows written in the latest snapshot. Scores rows: {system_snapshot['latest_score_rows']:,}. This keeps the dashboard grounded in live pipeline output.</div>
+                    <div class="panel-meta">Stats rows written in the latest snapshot. Scores rows: {system_snapshot['latest_score_rows']:,}. This gives the interface a live operational backbone.</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -401,8 +431,8 @@ if page == "Overview":
                 f"""
                 <div class="panel">
                     <div class="panel-label">Coverage</div>
-                    <div class="panel-value">{df['language'].nunique():,}</div>
-                    <div class="panel-meta">Distinct languages represented in the current leaderboard.</div>
+                    <div class="panel-value">{system_snapshot['languages_covered']:,}</div>
+                    <div class="panel-meta">Distinct languages represented across the tracked graph.</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -411,9 +441,20 @@ if page == "Overview":
             st.markdown(
                 f"""
                 <div class="panel">
-                    <div class="panel-label">Anomaly watch</div>
-                    <div class="panel-value">{anomaly_count}</div>
-                    <div class="panel-meta">Repositories currently breaching the statistical growth threshold.</div>
+                    <div class="panel-label">History depth</div>
+                    <div class="panel-value">{system_snapshot['tracked_days']:,}</div>
+                    <div class="panel-meta">Distinct snapshot days available for trend and anomaly analysis.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with pulse_far:
+            st.markdown(
+                f"""
+                <div class="panel">
+                    <div class="panel-label">Sync integrity</div>
+                    <div class="panel-value">{score_sync_gap}</div>
+                    <div class="panel-meta">Difference between latest stats and latest score rows. Lower is better.</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -433,7 +474,7 @@ if page == "Overview":
                     x=lang_df["stars"],
                     y=lang_df["language"],
                     orientation="h",
-                    marker=dict(color=lang_df["stars"], colorscale=[[0, "#10355d"], [1, "#35e0d0"]], showscale=False),
+                    marker=dict(color=lang_df["stars"], colorscale=[[0, "#0e3b2c"], [0.5, "#1ec7c1"], [1, "#4f8cff"]], showscale=False),
                     text=[f"{value:,.0f}" for value in lang_df["stars"]],
                     textposition="outside",
                 )
@@ -450,7 +491,7 @@ if page == "Overview":
                 y="topic",
                 orientation="h",
                 color="count",
-                color_continuous_scale=["#10233e", "#4da3ff"],
+                color_continuous_scale=["#0e3b2c", "#49d17d", "#4f8cff"],
             )
             fig2.update_layout(**CHART_THEME, height=320, title="Topic footprint")
             fig2.update_traces(textposition="outside")
@@ -589,7 +630,7 @@ elif page == "Trends":
                 y="name",
                 orientation="h",
                 color="stars",
-                color_continuous_scale=["#10233e", "#4da3ff"],
+                color_continuous_scale=["#0e3b2c", "#49d17d", "#4f8cff"],
             )
             fig.update_layout(**CHART_THEME, height=520, title="Current snapshot by star count")
             fig.update_coloraxes(showscale=False)
@@ -623,7 +664,7 @@ elif page == "Trends":
                     x=fastest["star_growth"],
                     y=fastest["name"],
                     orientation="h",
-                    marker=dict(color=fastest["star_growth"], colorscale=[[0, "#12385f"], [1, "#49d17d"]], showscale=False),
+                    marker=dict(color=fastest["star_growth"], colorscale=[[0, "#0f264f"], [0.5, "#1ec7c1"], [1, "#49d17d"]], showscale=False),
                     text=[f"+{value:,.0f}" for value in fastest["star_growth"]],
                     textposition="outside",
                 )
@@ -641,7 +682,7 @@ elif page == "Trends":
                     x="snapshot_date",
                     y="stars",
                     color="name",
-                    color_discrete_sequence=["#4da3ff", "#35e0d0", "#49d17d", "#f3c969", "#ff5d73", "#82b6ff"],
+                    color_discrete_sequence=["#4f8cff", "#1ec7c1", "#49d17d", "#78e08f", "#86b5ff", "#1a7f63"],
                 )
                 fig2.update_traces(line=dict(width=2.5))
                 fig2.update_layout(
