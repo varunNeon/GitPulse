@@ -15,4 +15,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Ping Streamlit app
-        run: curl --fail --silent --show-error --location https://gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app > /dev/null
+        run: |
+          curl --silent --show-error --max-time 30 \
+            --output /dev/null \
+            --write-out "Streamlit responded with HTTP %{http_code}\n" \
+            https://gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app
