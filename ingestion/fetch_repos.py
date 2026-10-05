@@ -76,6 +76,11 @@ def fetch_repos_by_topic(topic: str, session: requests.Session, max_repos: int =
         response.raise_for_status()
     except requests.exceptions.HTTPError as exc:
         status_code = exc.response.status_code if exc.response is not None else "unknown"
+        if status_code == 401:
+            logger.error("GitHub API token is invalid or expired for topic '%s'.", topic)
+            raise FetchError(
+                "GitHub API authentication failed. The configured GITHUB_TOKEN is invalid or expired."
+            ) from exc
         if status_code == 403:
             logger.error("GitHub API rate limit or auth failure for topic '%s'.", topic)
         raise FetchError(f"GitHub request failed for topic '{topic}' with status {status_code}.") from exc
