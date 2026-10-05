@@ -1,17 +1,24 @@
 import asyncio
 import os
 
-from playwright.async_api import TimeoutError as PlaywrightTimeoutError
-from playwright.async_api import async_playwright
-
 
 APP_URL = os.getenv(
     "STREAMLIT_APP_URL",
     "https://gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app/",
 )
+APP_READY_SELECTOR = ", ".join(
+    (
+        "[data-testid='stApp']",
+        "[data-testid='stAppViewContainer']",
+        "section.main",
+    )
+)
 
 
 async def main() -> None:
+    from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+    from playwright.async_api import async_playwright
+
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch()
         page = await browser.new_page()
@@ -29,7 +36,7 @@ async def main() -> None:
             print("Wake-up button not shown.")
 
         try:
-            await page.wait_for_selector("[data-testid='stApp']", timeout=120_000)
+            await page.wait_for_selector(APP_READY_SELECTOR, timeout=120_000)
             print("Streamlit app shell loaded.")
         except PlaywrightTimeoutError:
             title = await page.title()
