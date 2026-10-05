@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 
 from common.logging_config import get_logger
 
@@ -23,10 +24,14 @@ def _get_db_settings():
 
 def get_database_url():
     settings = _get_db_settings()
-    return (
-        f"postgresql://{settings['DB_USER']}:{settings['DB_PASSWORD']}"
-        f"@{settings['DB_HOST']}:{settings['DB_PORT']}/{settings['DB_NAME']}"
-    )
+    return URL.create(
+        "postgresql",
+        settings["DB_USER"],
+        settings["DB_PASSWORD"],
+        settings["DB_HOST"],
+        int(settings["DB_PORT"]),
+        settings["DB_NAME"],
+    ).render_as_string(hide_password=False)
 
 
 def get_engine():
