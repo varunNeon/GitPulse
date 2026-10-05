@@ -5,3 +5,6 @@ __pycache__/
 logs/
 last_updated.txt
 .pytest_cache/
+.wake/
+wakeup_log.txt
+st-awake-template-main/

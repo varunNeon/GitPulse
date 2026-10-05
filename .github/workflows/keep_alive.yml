@@ -2,7 +2,7 @@ name: Keep Streamlit Alive
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -15,9 +15,21 @@ jobs:
     timeout-minutes: 10
     env:
       STREAMLIT_APP_URL: https://gitpulse-64rqmapppv4wwlu8qpghuam.streamlit.app/
+      ENFORCE_WAKE_INTERVAL: "1"
+      WAKE_INTERVAL_HOURS: "10"
+      WAKE_LOG_FILE: wakeup_log.txt
+      WAKE_STATE_FILE: .wake/wakeup_state.json
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Restore wake state
+        uses: actions/cache@v4
+        with:
+          path: .wake
+          key: streamlit-wake-state-${{ github.run_id }}
+          restore-keys: |
+            streamlit-wake-state-
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,8 +38,15 @@ jobs:
 
       - name: Install Playwright
         run: |
-          pip install playwright
+          pip install requests playwright
           playwright install chromium --with-deps
 
       - name: Wake Streamlit app
         run: python scripts/keep_streamlit_alive.py
+
+      - name: Upload wake log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: streamlit-wake-log
+          path: wakeup_log.txt
