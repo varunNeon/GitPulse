@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520" role="img" aria-labelledby="title desc">
+  <title id="title">GitPulse repository intelligence pipeline</title>
+  <desc id="desc">GitHub repository data flows through ingestion, transformation, PostgreSQL storage, impact scoring, and an interactive Streamlit dashboard.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07151b"/><stop offset="1" stop-color="#090d19"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1ec7c1"/><stop offset="1" stop-color="#49d17d"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1400" height="520" rx="30" fill="url(#bg)"/>
+  <circle cx="1190" cy="54" r="170" fill="#1ec7c1" opacity=".045"/><circle cx="120" cy="480" r="230" fill="#4f8cff" opacity=".04"/>
+  <text x="76" y="93" fill="#49d17d" font-family="monospace" font-size="15" letter-spacing="4">AI ECOSYSTEM TELEMETRY</text>
+  <text x="72" y="164" fill="#edf8f3" font-family="Arial,sans-serif" font-size="62" font-weight="700">Git<tspan fill="#1ec7c1">Pulse</tspan></text>
+  <text x="76" y="205" fill="#9bb2ad" font-family="Arial,sans-serif" font-size="20">Follow the signals behind the repositories shaping AI.</text>
+  <rect x="76" y="239" width="250" height="38" rx="19" fill="#0d2824" stroke="#276a53"/>
+  <circle cx="98" cy="258" r="5" fill="#49d17d" filter="url(#glow)"/><text x="115" y="264" fill="#c6e7dc" font-family="monospace" font-size="13" letter-spacing="1">DAILY REPOSITORY SIGNALS</text>
+  <text x="76" y="348" fill="#edf8f3" font-family="Arial,sans-serif" font-size="21" font-weight="700">From GitHub search to actionable discovery</text>
+  <text x="76" y="381" fill="#8aa39b" font-family="Arial,sans-serif" font-size="16">A scheduled data pipeline, transparent scoring, and an interactive dashboard.</text>
+  <g font-family="monospace" text-anchor="middle">
+    <g transform="translate(78 421)"><rect width="205" height="63" rx="14" fill="#0b1a20" stroke="#1b4845"/><text x="102" y="27" fill="#1ec7c1" font-size="12" letter-spacing="1">01 · DISCOVER</text><text x="102" y="48" fill="#c7d8d3" font-size="13">GitHub API</text></g>
+    <path d="M291 452h30" stroke="url(#accent)" stroke-width="2"/><path d="m316 447 8 5-8 5" fill="none" stroke="#49d17d" stroke-width="2"/>
+    <g transform="translate(333 421)"><rect width="205" height="63" rx="14" fill="#0b1a20" stroke="#1b4845"/><text x="102" y="27" fill="#1ec7c1" font-size="12" letter-spacing="1">02 · PREPARE</text><text x="102" y="48" fill="#c7d8d3" font-size="13">Python · Pandas</text></g>
+    <path d="M546 452h30" stroke="url(#accent)" stroke-width="2"/><path d="m571 447 8 5-8 5" fill="none" stroke="#49d17d" stroke-width="2"/>
+    <g transform="translate(588 421)"><rect width="205" height="63" rx="14" fill="#0b1a20" stroke="#1b4845"/><text x="102" y="27" fill="#1ec7c1" font-size="12" letter-spacing="1">03 · STORE</text><text x="102" y="48" fill="#c7d8d3" font-size="13">PostgreSQL</text></g>
+    <path d="M801 452h30" stroke="url(#accent)" stroke-width="2"/><path d="m826 447 8 5-8 5" fill="none" stroke="#49d17d" stroke-width="2"/>
+    <g transform="translate(843 421)"><rect width="205" height="63" rx="14" fill="#0b1a20" stroke="#1b4845"/><text x="102" y="27" fill="#1ec7c1" font-size="12" letter-spacing="1">04 · SCORE</text><text x="102" y="48" fill="#c7d8d3" font-size="13">Impact + growth</text></g>
+    <path d="M1056 452h30" stroke="url(#accent)" stroke-width="2"/><path d="m1081 447 8 5-8 5" fill="none" stroke="#49d17d" stroke-width="2"/>
+    <g transform="translate(1098 421)"><rect width="225" height="63" rx="14" fill="#0b1a20" stroke="#1b4845"/><text x="112" y="27" fill="#1ec7c1" font-size="12" letter-spacing="1">05 · EXPLORE</text><text x="112" y="48" fill="#c7d8d3" font-size="13">Streamlit · Plotly</text></g>
+  </g>
+</svg>
