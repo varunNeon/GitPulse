@@ -66,8 +66,8 @@ hr{border-color:rgba(89,122,173,.16)!important;}
 .rail-title span{color:var(--green);}
 .rail-sub{margin:.4rem 0 1.1rem 0;}
 .rail-block{padding:.9rem 1rem;margin-top:1rem;}
-.rail-row{display:flex;justify-content:space-between;gap:.5rem;font-size:.8rem;color:var(--muted);padding:.28rem 0;}
-.rail-row b{color:var(--text);font-weight:500;}
+.rail-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 .5rem;font-size:.8rem;color:var(--muted);padding:.28rem 0;}
+.rail-row b{color:var(--text);font-weight:500;white-space:nowrap;}
 .status{display:flex;align-items:center;gap:.5rem;font-size:.92rem;font-weight:500;margin:.35rem 0 .5rem 0;}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(73,209,125,.7);}
 .status.warn{color:var(--amber);} .status.warn .dot{background:var(--amber);box-shadow:0 0 10px rgba(243,201,105,.6);}
@@ -105,7 +105,8 @@ hr{border-color:rgba(89,122,173,.16)!important;}
 .repo-mid{display:flex;justify-content:space-between;align-items:flex-end;gap:.75rem;}
 .repo-name{font-size:1.05rem;font-weight:700;color:var(--text)!important;text-decoration:none!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .repo-name:hover{color:var(--cyan)!important;}
-.repo-stats{display:flex;gap:1rem;font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--muted);}
+.repo-stats{display:flex;flex-wrap:wrap;gap:.2rem .9rem;font-family:'IBM Plex Mono',monospace;font-size:.76rem;color:var(--muted);}
+.repo-stats span{white-space:nowrap;}
 .repo-stats b{color:var(--text);font-weight:500;}
 .chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:auto;padding-top:.15rem;}
 .chip{font-size:.68rem;padding:.15rem .5rem;border-radius:999px;background:rgba(30,199,193,.08);border:1px solid rgba(30,199,193,.18);color:#9fe3df;}
@@ -115,7 +116,8 @@ hr{border-color:rgba(89,122,173,.16)!important;}
 
 .footer-note{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--muted);padding:1.6rem 0 .5rem 0;}
 .footer-note a{color:var(--cyan);text-decoration:none;}
-@media (max-width:1100px){.card-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (max-width:1100px){.card-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.panel-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+@media (max-width:900px){.spark{display:none;}}
 @media (max-width:700px){.card-grid{grid-template-columns:1fr;}.panel-grid{grid-template-columns:1fr 1fr!important;}}
 </style>
 """,
@@ -392,7 +394,8 @@ def hbar(labels, values, text, color, hover, x_suffix=""):
             hovertemplate=hover,
         )
     )
-    fig.update_xaxes(range=[0, max(values) * 1.28 if len(values) else 1], ticksuffix=x_suffix)
+    # Every bar carries its own value label, so the x axis would only repeat it.
+    fig.update_xaxes(range=[0, max(values) * 1.35 if len(values) else 1], ticksuffix=x_suffix, showticklabels=False, showgrid=False)
     return fig
 
 
@@ -513,9 +516,9 @@ with main_col:
                 fig = hbar(
                     share.index,
                     share.values,
-                    [f"{pct:.0f}% · {compact(lang_df[lang])}" for lang, pct in share.items()],
+                    [f"{pct:.0f}%" for pct in share.values],
                     colors,
-                    "%{y}: %{x:.1f}% of stars<extra></extra>",
+                    [f"{lang}: {pct:.1f}% of stars ({compact(lang_df[lang])})<extra></extra>" for lang, pct in share.items()],
                     x_suffix="%",
                 )
                 show_chart(style_fig(fig, 330, "Share of stars by language"))
